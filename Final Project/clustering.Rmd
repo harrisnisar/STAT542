@@ -1,0 +1,83 @@
+---
+title: "Clustering"
+author: "Saba Paya"
+date: "4/25/2022"
+output: pdf_document
+---
+
+# Provide frequency table of the outcome variable in both training and testing data.
+```{r}
+train <- read.csv("C:/Users/sabap/Desktop/UIUC/STAT 542/Final Project/fashion-mnist_train.csv")
+
+test <- read.csv("C:/Users/sabap/Desktop/UIUC/STAT 542/Final Project/fashion-mnist_test.csv")
+
+dim(train)
+dim(test)
+
+
+# frequency table for train
+table(train[, 1])
+```
+
+```{r}
+# frequency table for test
+table(test[, 1])
+```
+
+# PCA
+```{r}
+# centering the data only 
+train_sc <- scale(train[,-1], scale = FALSE)
+
+pc <- prcomp(train_sc)
+
+plot(pc, type = "l", pch = 19, main = "PCA Variance")
+
+```
+```{r}
+plot(x=c(1:10), y=summary(pc)$importance[2,][1:10], type = "b", pch = 19, 
+     main = "PC Proportion of Variance", xlab='Prinicipal Components', ylab='Proportion of Variance', xaxt = 'n')
+axis(1, at = seq(1, 10, 1))
+```
+
+
+```{r}
+summary(pc)
+
+eigs <- pc$sdev^2
+eigs[1] / sum(eigs)
+
+summary(pc)$importance[2,][1:10]
+```
+
+```{r}
+library(colorspace)
+pairs(pc$x[, 1:4], pch = 19)
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(data = data.frame(pc$x), aes(x=PC1, y=PC2)) + 
+    geom_point(color = rainbow_hcl(10)[train[,1]+1], size = 1)
+```
+```{r}
+pc$rotation
+features = row.names(pc$rotation)
+ggplot(data = data.frame(pc$rotation), aes(x=PC1, y=PC2, label=features,color=features)) + 
+        geom_point(size = 3) + geom_text(size=3)
+```
+
+
+# K-Means Table
+```{r}
+k.df <- read.csv("C:/Users/sabap/Desktop/UIUC/STAT 542/Final Project/fashion-mnist_train_with_clusters.csv")
+
+dim(k.df)
+
+# creating table 
+tab = table(k.df[,786], k.df[,1])
+tab
+```
+
+
